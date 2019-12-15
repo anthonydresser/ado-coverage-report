@@ -6,6 +6,9 @@
     "name": "Coverage Reports",
     "description": "Provides coverage based on cobvera reports.",
     "public": false,
+    "categories": [
+        "Azure Pipelines"
+    ],
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
