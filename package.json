@@ -1,0 +1,13 @@
+{
+  "name": "coverage-extension",
+  "version": "1.0.0",
+  "description": "Provides coverage based on cobvera reports",
+  "author": "anthonydresser",
+  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "vss-web-extension-sdk": "^5.141.0"
+  }
+}

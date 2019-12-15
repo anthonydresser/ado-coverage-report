@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <div id="container"></div>
+  </body>
+  <script src="lib/VSS.SDK.min.js"></script>
+  <script>
+    VSS.init({
+      usePlatformScripts: true,
+      moduleLoaderConfig: {
+        paths: { enhancer: "scripts" }
+      }
+    });
+    let noop = function() {};
+    VSS.ready(function() {
+      require(["out/index"], noop);
+      VSS.notifyLoadSucceeded();
+    });
+    VSS.register("registerBuild", {
+      updateContext: noop
+    });
+  </script>
+</html>

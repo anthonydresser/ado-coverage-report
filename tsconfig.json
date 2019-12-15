@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "alwaysStrict": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "strict": true,
+        "types": [
+          "vss-web-extension-sdk"
+        ],
+        "target": "ESNext",
+        "skipLibCheck": true,
+        "outDir": "out"
+    },
+    "include": ["src"]
+}

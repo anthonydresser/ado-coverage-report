@@ -1,0 +1,47 @@
+{
+    "manifestVersion": 1,
+    "id": "coverage-reports",
+    "version": "1.0.0",
+    "publisher": "anthonydresser",
+    "name": "Coverage Reports",
+    "description": "Provides coverage based on cobvera reports.",
+    "public": false,
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "files": [
+        {
+            "path": "index.html",
+            "addressable": true
+        },
+        {
+            "path": "out",
+            "addressable": true
+        },
+        {
+            "path": "node_modules/vss-web-extension-sdk/lib",
+            "packagePath": "lib",
+            "addressable": true
+        }
+    ],
+    "contributions": [
+        {
+            "id": "build-coverage-tab",
+            "type": "ms.vss-build-web.build-results-tab",
+            "description": "Coverage Reports for tabs",
+            "targets": [
+                "ms.vss-build-web.build-results-view"
+            ],
+            "properties": {
+                "name": "Coverage",
+                "uri": "index.html",
+                "dynamic": true
+            },
+            "includes": [
+                "ms.vss-releaseManagement-web.release-service-data-external"
+            ]
+        }
+    ]
+}
