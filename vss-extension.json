@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "coverage-reports",
-    "version": "1.0.0",
+    "version": "1.0.34",
     "publisher": "anthonydresser",
     "name": "Coverage Reports",
     "description": "Provides coverage based on cobvera reports.",
@@ -28,6 +28,9 @@
             "packagePath": "lib",
             "addressable": true
         }
+    ],
+    "scopes": [
+        "vso.build"
     ],
     "contributions": [
         {

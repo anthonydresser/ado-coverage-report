@@ -1,13 +1,28 @@
 {
   "name": "coverage-extension",
-  "version": "1.0.0",
+  "version": "1.0.34",
   "description": "Provides coverage based on cobvera reports",
   "author": "anthonydresser",
   "license": "ISC",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "./node_modules/.bin/rollup -c && ./node_module/.bin/tfx extension create --manifest-globs vss-extension.json",
+    "compile": "./node_modules/.bin/rollup -c"
   },
   "dependencies": {
+    "minimatch-browser": "^1.0.0",
     "vss-web-extension-sdk": "^5.141.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-alias": "^2.2.0",
+    "@rollup/plugin-node-resolve": "^6.0.0",
+    "@rollup/plugin-typescript": "^2.0.1",
+    "@types/minimatch": "^3.0.3",
+    "rollup": "^1.27.13",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "tfx-cli": "^0.7.11",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.3"
   }
 }

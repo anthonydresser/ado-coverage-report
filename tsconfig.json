@@ -1,17 +1,23 @@
 {
     "compilerOptions": {
-        "alwaysStrict": true,
         "noImplicitAny": true,
+        "experimentalDecorators": true,
         "noImplicitReturns": true,
-        "noImplicitThis": true,
         "noUnusedLocals": true,
-        "strict": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
+        "strictBindCallApply": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
         "types": [
           "vss-web-extension-sdk"
         ],
-        "target": "ESNext",
+        "target": "es2017",
         "skipLibCheck": true,
-        "outDir": "out"
+        "outDir": "out",
+        "module": "AMD"
     },
     "include": ["src"]
 }
