@@ -1,6 +1,6 @@
 import { createLCOVEntry, LCOVEntry } from './lcov';
 import minimatch from 'minimatch';
-import { coalesce } from './arrays';
+import { coalesce } from './base/common/arrays';
 
 export interface Stat {
     max: number;

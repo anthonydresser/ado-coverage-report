@@ -2,9 +2,10 @@ import * as controls from 'VSS/Controls';
 import * as buildExtensionContracts from "TFS/Build/ExtensionContracts";
 import * as buildContracts from 'TFS/Build/Contracts';
 import * as buildClient from 'TFS/Build/RestClient';
-import * as strings from './strings';
+import * as strings from './base/common/strings';
 import { Report, StatEntry } from './reportBuilder';
-import { clearNode } from './dom';
+import { clearNode } from './base/browser/dom';
+import { CoverageReport } from './coverageReport';
 
 class CoverageTab extends controls.BaseControl {
     private config: buildExtensionContracts.IBuildResultsViewExtensionConfig = VSS.getConfiguration()
@@ -29,6 +30,7 @@ class CoverageTab extends controls.BaseControl {
                 const coverageInfo = (await (await fetch(documentUri)).text());
                 this.report.createReport(coverageInfo);
                 const container = this.getElement().get(0);
+                new CoverageReport(container, coverageInfo);
                 const input = document.createElement('input');
                 const statContainer = document.createElement('div');
                 const withStats = (stats: StatEntry[]): void => {
