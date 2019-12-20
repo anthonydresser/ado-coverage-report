@@ -1,6 +1,6 @@
 import { IReport, Stats } from "./reportBuilder";
 import { Emitter } from "./base/common/event";
-import { addClass } from "./base/browser/dom";
+import { addClass, clearNode } from "./base/browser/dom";
 
 export class GlobalStats {
     private readonly container: HTMLElement;
@@ -75,28 +75,32 @@ export class GlobalStats {
 export class FileTable {
     private readonly _onItemSelect = new Emitter<string>();
     public readonly onItemSelect = this._onItemSelect.event;
-    private container: HTMLElement;
-    private tableContainer: HTMLElement;
     private table: HTMLTableElement;
 
     constructor(parent: HTMLElement, private readonly report: IReport) {
-        this.container = document.createElement('div');
-        addClass(this.container, 'file-table');
-        parent.appendChild(this.container);
-        this.tableContainer = document.createElement('div');
-        this.container.append(this.tableContainer);
+        const container = document.createElement('div');
+        container.innerText = 'File Table';
+        addClass(container, 'file-table');
+        parent.appendChild(container);
+        const tableContainer = document.createElement('div');
+        container.append(tableContainer);
         this.table = document.createElement('table');
+        tableContainer.appendChild(this.table);
     }
 
     async render(filter?: string): Promise<void> {
-        this.container.innerText = 'File Table';
+        clearNode(this.table);
         const files = await this.report.files(filter);
         files?.forEach(async (v, i) => {
-
+            const stats = await this.report.stats(v);
+            if (stats) {
+                const row = this.table.insertRow(i);
+                this.fillRow(row, v, stats);
+            }
         });
     }
 
-    private toRow(path: string, stats: Stats): HTMLTableRowElement {
-
+    private fillRow(row: HTMLTableRowElement, path: string, stats: Stats): void {
+        row.insertCell().innerText = path;
     }
 }
