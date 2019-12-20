@@ -1,26 +1,34 @@
 import { createLCOVEntry, LCOVEntry } from './lcov';
 import minimatch from 'minimatch';
 import { coalesce } from './base/common/arrays';
+import * as comlink from 'comlink';
 
 export interface Stat {
     max: number;
     actual: number;
 }
 
-export interface StatEntry {
-    name: string;
-    stats: Stat;
+export interface Stats {
+    lines: Stat;
+    branches: Stat;
+    functions: Stat;
 }
 
-export interface CategoryStat {
-    category: string;
-    stats: StatEntry[];
+export interface IReport {
+    createReport(data: string): Promise<void>;
+
+    stats(match?: string): Promise<Stats | undefined>;
+    files(match?: string): Promise<Array<string> | undefined>;
 }
 
-export const LineCountString = 'Line Count';
-export const BranchCountString = 'Branch Count';
+interface IInternalReport {
+    createReport(data: string): void;
 
-export class Report {
+    stats(match?: string): Stats | undefined;
+    files(match?: string): Array<string> | undefined;
+}
+
+class Report implements IInternalReport {
     private lcovEntries?: LCOVEntry[];
 
     createReport(data: string): void {
@@ -29,9 +37,7 @@ export class Report {
     }
 
     // stats(matches: { name: string; match: string }): CategoryStat[] | undefined;
-    stats(match: string): StatEntry[] | undefined;
-    stats(): { name: string; stats: Stat }[] | undefined;
-    stats(matches?: string | { name: string; match: string }): CategoryStat[] | StatEntry[] | undefined {
+    stats(matches?: string /*| { name: string; match: string }*/): /*CategoryStat[] | */Stats | undefined {
         if (!this.lcovEntries) {
             return;
         }
@@ -46,18 +52,34 @@ export class Report {
             filter = () => true;
         }
 
-        const stats: StatEntry[] = [{ name: LineCountString, stats: { actual: 0, max: 0 } }, { name: BranchCountString, stats: { actual: 0, max: 0 } }]
+        const stats: Stats = { lines: { actual: 0, max: 0 }, branches: { actual: 0, max: 0 }, functions: { actual: 0, max: 0} };
         for (const entry of this.lcovEntries) {
             if (filter(entry.SF)) {
-                const lineCount = stats.find(s => s.name === LineCountString)!;
-                lineCount.stats.actual += entry.LH;
-                lineCount.stats.max += entry.LF;
-                const branchCount = stats.find(s => s.name === BranchCountString)!;
-                branchCount.stats.actual += entry.LH;
-                branchCount.stats.max += entry.LF;
+                stats.lines.actual += entry.LH;
+                stats.lines.max += entry.LF;
+                stats.branches.actual += entry.BRH;
+                stats.branches.max += entry.BRF;
+                stats.functions.actual += entry.FNH;
+                stats.functions.max += entry.FNF;
             }
         }
 
         return stats;
     }
+
+    files(match?: string): Array<string> | undefined {
+        if (!this.lcovEntries) {
+            return;
+        }
+
+        const files = this.lcovEntries.map(l => l.SF);
+
+        if (match) {
+            return files.filter(f => minimatch(f, match));
+        } else {
+            return files;
+        }
+    }
 }
+
+comlink.expose(Report);

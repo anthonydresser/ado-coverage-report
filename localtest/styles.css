@@ -1,0 +1,26 @@
+.stats-container, .global-stats {
+    display: flex;
+}
+
+.global-stats > * {
+    padding-right: 10px;
+}
+
+.stats-container > * {
+    padding-right: 2px;
+}
+
+.stats-container > .percent {
+    font-weight: bold;
+}
+
+.stats-container > .number {
+    font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: 10px;
+    color: #555;
+    background: #E8E8E8;
+    padding: 4px 5px;
+    border-radius: 3px;
+    vertical-align: middle;
+
+}

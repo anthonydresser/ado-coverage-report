@@ -45,13 +45,14 @@ export function createLCOVEntry(itemString: string): LCOVEntry | undefined {
     const entry = Object.create(null);
     const items = itemString.split(/\r?\n/);
     items.forEach(s => {
-        let [key, value] = s.split(':') as [keyof LCOVEntry, string];
+        let [key, ...valueArray] = s.split(':') as [keyof LCOVEntry, string];
+        let value = valueArray.join(':');
         if (!key || (key as string) === 'TN') {
             return;
         }
         if (key === 'SF') {
             // start at src
-            value = value.substr(value.indexOf('src'))
+            value = value.slice(value.indexOf('src')).replace(/\\/g, '/');
         }
         entry[key] = value.indexOf(',') > -1 ? value.split(',').map(v => isNaN(Number(v)) ? v : Number(v)) : isNaN(Number(value)) ? value : Number(value);
     });

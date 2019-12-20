@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "coverage-reports",
-    "version": "1.0.34",
+    "version": "1.0.37",
     "publisher": "anthonydresser",
     "name": "Coverage Reports",
     "description": "Provides coverage based on cobvera reports.",
@@ -17,6 +17,10 @@
     "files": [
         {
             "path": "index.html",
+            "addressable": true
+        },
+        {
+            "path": "styles.css",
             "addressable": true
         },
         {
