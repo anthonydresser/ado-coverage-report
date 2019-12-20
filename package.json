@@ -22,7 +22,7 @@
     "@types/minimatch": "^3.0.3",
     "rollup": "^1.27.13",
     "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-builtins": "1.0.1",
     "tfx-cli": "^0.7.11",
     "tslib": "^1.10.0",
     "typescript": "^3.7.3"
