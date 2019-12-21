@@ -12,6 +12,9 @@ export class CoverageReport {
     private globalStats?: GlobalStats;
     private fileTable?: FileTable;
 
+    private context?: string;
+    private filter?: string;
+
     constructor(private readonly container: HTMLElement, private readonly lcovString: string) {
     }
 
@@ -31,12 +34,32 @@ export class CoverageReport {
         this.fileTable = new FileTable(fileTableContainer, this.report);
         this.parent.appendChild(fileTableContainer); 
         this.container.appendChild(this.parent);
-        this.globalStats.render();
-        this.fileTable.render();
+        this.render();
+        window.addEventListener('hashchange', () => {
+            this.onContextChange(window.location.hash.slice(1));
+        }, false)
     }
 
     private onInputChange(e: Event): void {
-        this.globalStats!.render(this.minimatchInput!.value);
-        this.fileTable!.render(this.minimatchInput!.value);
+        this.filter = this.minimatchInput!.value;
+        this.render();
+    }
+
+    private onContextChange(path: string): void {
+        this.context = `**/${path}/**`;
+        this.render();
+    }
+
+    private render(): void {
+        const filter = [];
+        if (this.context) {
+            filter.push(this.context);
+        }
+        if (this.filter) {
+            filter.push(this.filter);
+        }
+
+        this.globalStats!.render(filter);
+        this.fileTable!.render(filter);
     }
 }

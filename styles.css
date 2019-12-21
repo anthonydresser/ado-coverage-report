@@ -1,3 +1,58 @@
-.stats-container {
+.stats-container, .global-stats {
     display: flex;
+}
+
+.global-stats > * {
+    padding-right: 10px;
+}
+
+.stats-container > * {
+    padding-right: 2px;
+}
+
+.stats-container > .percent {
+    font-weight: bold;
+}
+
+.stats-container > .number {
+    font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: 10px;
+    color: #555;
+    background: #E8E8E8;
+    padding: 4px 5px;
+    border-radius: 3px;
+    vertical-align: middle;
+}
+
+.file-table td, .file-table th {
+    padding: 10px;
+}
+
+.file-table td {
+    border-right: 1px solid #bbb;
+}
+
+.file-table tr {
+    border-bottom: 1px solid #bbb;
+}
+
+.file-table tbody {
+    border: 1px solid #bbb;
+}
+
+.file-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.medium {
+    background: #fff4c2;
+}
+
+.low {
+    background: #FCE1E5;
+}
+
+.high {
+    background: rgb(230,245,208);
 }

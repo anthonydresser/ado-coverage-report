@@ -17,15 +17,15 @@ export interface Stats {
 export interface IReport {
     createReport(data: string): Promise<void>;
 
-    stats(match?: string): Promise<Stats | undefined>;
-    files(match?: string): Promise<Array<string> | undefined>;
+    stats(matches?: string[]): Promise<Stats | undefined>;
+    files(matches?: string[]): Promise<Array<string> | undefined>;
 }
 
 interface IInternalReport {
     createReport(data: string): void;
 
-    stats(match?: string): Stats | undefined;
-    files(match?: string): Array<string> | undefined;
+    stats(matches?: string[]): Stats | undefined;
+    files(matches?: string[]): Array<string> | undefined;
 }
 
 class Report implements IInternalReport {
@@ -37,24 +37,14 @@ class Report implements IInternalReport {
     }
 
     // stats(matches: { name: string; match: string }): CategoryStat[] | undefined;
-    stats(matches?: string /*| { name: string; match: string }*/): /*CategoryStat[] | */Stats | undefined {
+    stats(matches: string[] = [] /*| { name: string; match: string }*/): /*CategoryStat[] | */Stats | undefined {
         if (!this.lcovEntries) {
             return;
         }
 
-        let filter: (file: string) => boolean;
-
-        if (!matches) {
-            filter = () => true;
-        } else if (typeof matches === 'string') {
-            filter = file => minimatch(file, matches);
-        } else {
-            filter = () => true;
-        }
-
         const stats: Stats = { lines: { actual: 0, max: 0 }, branches: { actual: 0, max: 0 }, functions: { actual: 0, max: 0} };
         for (const entry of this.lcovEntries) {
-            if (filter(entry.SF)) {
+            if (matches.every(m => minimatch(entry.SF, m))) {
                 stats.lines.actual += entry.LH;
                 stats.lines.max += entry.LF;
                 stats.branches.actual += entry.BRH;
@@ -67,15 +57,15 @@ class Report implements IInternalReport {
         return stats;
     }
 
-    files(match?: string): Array<string> | undefined {
+    files(matches: string[] = []): Array<string> | undefined {
         if (!this.lcovEntries) {
             return;
         }
 
         const files = this.lcovEntries.map(l => l.SF);
 
-        if (match) {
-            return files.filter(f => minimatch(f, match));
+        if (matches) {
+            return files.filter(f => matches.every(m => minimatch(f, m)));
         } else {
             return files;
         }
