@@ -112,7 +112,6 @@ export class FileTable {
         parent.appendChild(container);
         const table = document.createElement('table');
         addClasses(table, 'file-table');
-        table.style.display = 'flex';
         table.style.flexDirection = 'column';
         table.style.overflow = 'hidden';
         table.style.flex = '1 1 auto'
@@ -192,8 +191,18 @@ export class FileTable {
 
         // bar cell
         const barCell = row.insertCell();
-        barCell.innerText = 'this would be the bar';
-        addClass(barCell, pcToColor(statementspc || branchespc));
+        addClasses(barCell, pcToColor(statementspc || branchespc), 'pic');
+        const chart = document.createElement('div');
+        barCell.appendChild(chart);
+        addClass(chart, 'chart');
+        const fill = document.createElement('div');
+        const empty = document.createElement('div');
+        addClass(fill, 'cover-fill');
+        addClass(empty, 'cover-empty');
+        chart.appendChild(fill);
+        chart.appendChild(empty);
+        fill.style.width = `${isNaN(statementspc || branchespc) ? 100 : Math.min(100, statementspc || branchespc)}%`
+        empty.style.width = `${isNaN(statementspc || branchespc) ? 0 : Math.max(0, 100 - (statementspc || branchespc))}%`
         
         if (statementspc) {
             // statements pc

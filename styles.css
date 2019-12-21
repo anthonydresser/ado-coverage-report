@@ -75,3 +75,44 @@ html, body {
     height: calc(100% - 8px);
     width: calc(100% - 8px);
 }
+
+.chart {
+    line-height: 0;
+}
+
+.low .chart {
+    border: 1px solid #C21F39;
+}
+
+.medium .chart {
+    border: 1px solid #f9cd0b;
+}
+
+.high .chart {
+    border: 1px solid rgb(77,146,33);
+}
+
+.cover-fill, .cover-empty {
+    display: inline-block;
+    height: 12px;
+}
+
+.medium .cover-fill {
+    background: #f9cd0b;
+}
+
+.low .cover-fill {
+    background: #C21F39;
+}
+
+.high .cover-fill {
+    background: rgb(77,146,33);
+}
+
+.cover-empty {
+    background: white;
+}
+
+td.pic {
+    min-width: 120px !important;
+}
