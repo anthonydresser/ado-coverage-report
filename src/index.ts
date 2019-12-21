@@ -26,7 +26,7 @@ class CoverageTab extends controls.BaseControl {
             if (documentUri) {
                 const coverageInfo = (await (await fetch(documentUri)).text());
                 const container = this.getElement().get(0);
-                const report = new CoverageReport(container, coverageInfo);
+                const report = new CoverageReport(container, coverageInfo, 'lcov');
                 await report.initialize();
             } else {
                 throw new Error('Could not get uri for coverage numbers');

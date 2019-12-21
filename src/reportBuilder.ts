@@ -27,14 +27,14 @@ export interface Stats {
 }
 
 export interface IReport {
-    createReport(data: string): Promise<void>;
+    createReport(data: string, type: ReportType): Promise<void>;
 
     stats(matches?: string[]): Promise<Stats | undefined>;
     files(matches?: string[]): Promise<Array<string> | undefined>;
 }
 
 interface IInternalReport {
-    createReport(data: string): void;
+    createReport(data: string, type: ReportType): void;
 
     stats(matches?: string[]): Stats | undefined;
     files(matches?: string[]): Array<string> | undefined;
@@ -52,14 +52,20 @@ function fromLCOV(entry: LCOVEntry): CoverageEntry {
     }
 }
 
+export type ReportType = 'cobertura' | 'lcov' | 'json';
+
 class Report implements IInternalReport {
     private entries?: CoverageEntry[];
 
-    createReport(data: string): void {
-        try {
-            this.entries = createLCOVReport(data)?.map(e => fromLCOV(e));
-        } catch (e) {
-            console.warn('Failed to create lcov report')
+    createReport(data: string, type: ReportType): void {
+        switch (type) {
+            case 'cobertura':
+                break;
+            case 'lcov':
+                this.entries = createLCOVReport(data).map(e => fromLCOV(e));
+                break;
+            case 'json':
+                break;
         }
     }
 
@@ -69,6 +75,9 @@ class Report implements IInternalReport {
         }
 
         const stats: Stats = { lines: { hit: 0, found: 0 }, branches: { hit: 0, found: 0 }, functions: { hit: 0, found: 0} };
+        if (this.entries[0].statementsFound) {
+            stats.statements = { hit: 0, found: 0 };
+        }
         for (const entry of this.entries) {
             if (matches.every(m => minimatch(entry.file, m))) {
                 stats.lines.hit += entry.linesHit;
@@ -77,6 +86,10 @@ class Report implements IInternalReport {
                 stats.branches.found += entry.branchesFound;
                 stats.functions.hit += entry.functionsHit;
                 stats.functions.found += entry.functionsFound;
+                if (entry.statementsFound) {
+                    stats.statements!.hit += entry.statementsHit!;
+                    stats.statements!.found += entry.statementsFound!;
+                }
             }
         }
 

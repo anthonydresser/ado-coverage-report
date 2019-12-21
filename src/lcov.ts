@@ -8,7 +8,7 @@ export interface LCOVEntry {
     /**
      * function [line number, name]
      */
-    FN: [number, string];
+    FN: [number, string][];
     /**
      * number of functions found
      */
@@ -20,7 +20,7 @@ export interface LCOVEntry {
     /**
      * execution count per function [count, name]
      */
-    FNDA: [number, string];
+    FNDA: [number, string][];
     /**
      * execution count per line [line number, count]
      */
@@ -44,7 +44,7 @@ export interface LCOVEntry {
 }
 
 export function createLCOVEntry(itemString: string): LCOVEntry | undefined {
-    const entry = Object.create(null);
+    const entry: LCOVEntry = Object.create(null);
     const items = itemString.split(/\r?\n/);
     items.forEach(s => {
         let [key, ...valueArray] = s.split(':') as [keyof LCOVEntry, string];
@@ -52,11 +52,45 @@ export function createLCOVEntry(itemString: string): LCOVEntry | undefined {
         if (!key || (key as string) === 'TN') {
             return;
         }
-        if (key === 'SF') {
-            // start at src
-            value = value.slice(value.indexOf('src')).replace(/\\/g, '/');
+        switch (key) {
+            case 'SF': {
+                value = value.slice(value.indexOf('src')).replace(/\\/g, '/');
+                entry[key] = value;
+                break;
+            }
+            case 'FN': {
+                if (!entry[key]) {
+                    entry[key] = [];
+                }
+                const [lineNumber, name] = value.split(',');
+                entry[key].push([Number(lineNumber), name])
+                break;
+            }
+            case 'FNDA': {
+                if (!entry[key]) {
+                    entry[key] = [];
+                }
+                const [count, name] = value.split(',');
+                entry[key].push([Number(count), name]);
+                break;
+            }
+            case 'DA': {
+                if (!entry[key]) {
+                    entry[key] = [];
+                }
+                const [lineNumber, count] = value.split(',');
+                entry[key].push([Number(lineNumber), Number(count)]);
+                break;
+            }
+            case 'FNF':
+            case 'FNH':
+            case 'LF':
+            case 'LH':
+            case 'BRF':
+            case 'BRH':
+                entry[key] = Number(value);
+                break;
         }
-        entry[key] = value.indexOf(',') > -1 ? value.split(',').map(v => isNaN(Number(v)) ? v : Number(v)) : isNaN(Number(value)) ? value : Number(value);
     });
     if (Object.keys(entry).length === 0) {
         return undefined;
@@ -64,7 +98,7 @@ export function createLCOVEntry(itemString: string): LCOVEntry | undefined {
     return entry;
 }
 
-export function createLCOVReport(data: string): LCOVEntry[] | undefined {
+export function createLCOVReport(data: string): LCOVEntry[] {
     const records = data.split('end_of_record');
     return coalesce(records.map(r => createLCOVEntry(r)));
 }

@@ -1,4 +1,4 @@
-import { IReport } from "./reportBuilder";
+import { IReport, ReportType } from "./reportBuilder";
 import { addClass, addClasses } from "./base/browser/dom";
 import { GlobalStats, FileTable } from "./stats";
 import * as comlink from 'comlink';
@@ -16,12 +16,12 @@ export class CoverageReport {
     private context?: string;
     private filter?: string;
 
-    constructor(private readonly container: HTMLElement, private readonly lcovString: string) {
+    constructor(private readonly container: HTMLElement, private readonly lcovString: string, private readonly type: ReportType) {
     }
 
     public async initialize(): Promise<void> {
         this.report = (await new (Reporter as any)()) as IReport;
-        await this.report.createReport(this.lcovString);
+        await this.report.createReport(this.lcovString, this.type);
         this.parent = document.createElement('div');
         addClasses(this.parent, 'coverage-report', 'full-size');
         this.parent.style.display = 'flex';

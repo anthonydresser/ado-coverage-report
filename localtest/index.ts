@@ -1,7 +1,6 @@
 import { CoverageReport } from '../src/coverageReport';
 
 const fileBrowser = document.getElementById('filebrowser') as HTMLInputElement;
-
 const reportContainer = document.getElementById('report');
 
 fileBrowser.addEventListener('change', e => {
@@ -9,7 +8,7 @@ fileBrowser.addEventListener('change', e => {
     const reader = new FileReader();
     reader.addEventListener('load', async event => {
         const contents = event.target.result;
-        const report = new CoverageReport(reportContainer, contents as string);
+        const report = new CoverageReport(reportContainer, contents as string, 'lcov');
         await report.initialize();
     });
     reader.readAsText(files[0]);

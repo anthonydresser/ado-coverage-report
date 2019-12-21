@@ -10,10 +10,28 @@ export class GlobalStats {
     private readonly functionsPercent: HTMLElement;
     private readonly functionsNumber: HTMLElement;
 
+    private readonly statementsContainer: HTMLElement;
+    private readonly statementsPercent: HTMLElement;
+    private readonly statementsNumber: HTMLElement;
+
     constructor(parent: HTMLElement, private readonly report: IReport) {
         this.container = document.createElement('div');
         addClass(this.container, 'global-stats');
         parent.appendChild(this.container);
+        
+        this.statementsContainer = document.createElement('div');
+        addClass(this.statementsContainer, 'stats-container');
+        this.statementsPercent = document.createElement('div');
+        addClass(this.statementsPercent, 'percent');
+        this.statementsContainer.appendChild(this.statementsPercent);
+        const statementsLabel = document.createElement('div');
+        addClass(statementsLabel, 'label');
+        statementsLabel.innerText = 'Statements'
+        this.statementsContainer.appendChild(statementsLabel);
+        this.statementsNumber = document.createElement('div');
+        addClass(this.statementsNumber, 'number');
+        this.statementsContainer.appendChild(this.statementsNumber);
+        this.container.appendChild(this.statementsContainer);
 
         const linesContainer = document.createElement('div');
         addClass(linesContainer, 'stats-container');
@@ -67,6 +85,15 @@ export class GlobalStats {
             this.functionsNumber.innerText = `${stats.functions.hit}/${stats.functions.found}`;
             this.linesPercent.innerText = `${Math.round((stats.lines.hit / stats.lines.found) * 10000)/100}%`
             this.linesNumber.innerText = `${stats.lines.hit}/${stats.lines.found}`;
+            if (stats.statements) {
+                if (!this.statementsContainer.parentElement) {
+                    this.container.prepend(this.statementsContainer);
+                }
+                this.statementsPercent.innerText = `${Math.round((stats.statements.hit / stats.statements.found) * 10000)/100}%`;
+                this.statementsNumber.innerText = `${stats.statements.hit}/${stats.statements.found}`;
+            } else if (this.statementsContainer.parentElement) {
+                this.statementsContainer.remove();
+            }
         }
     }
 }
@@ -152,22 +179,35 @@ export class FileTable {
         const branchespc = Math.round((stats.branches.hit / stats.branches.found) * 10000)/100;
         const functionspc = Math.round((stats.functions.hit / stats.functions.found) * 10000)/100;
         const linespc = Math.round((stats.lines.hit / stats.lines.found) * 10000)/100;
+        const statementspc = stats.statements ? Math.round((stats.statements.hit / stats.statements.found) * 10000)/100 : undefined;
 
         // path cell
         const fileCell = row.insertCell();
         const fileLink = document.createElement('a');
         fileLink.href = `#${path}`;
         fileLink.innerText = path;
-        addClass(fileCell, pcToColor(branchespc));
+        addClass(fileCell, pcToColor(statementspc || branchespc));
         fileCell.appendChild(fileLink);
         addClass(fileCell, 'file');
 
         // bar cell
         const barCell = row.insertCell();
         barCell.innerText = 'this would be the bar';
-        addClass(barCell, pcToColor(branchespc));
+        addClass(barCell, pcToColor(statementspc || branchespc));
+        
+        if (statementspc) {
+            // statements pc
+            const statemnetspcCell = row.insertCell();
+            statemnetspcCell.innerText = `${isNaN(statementspc) ? 100 : statementspc}%`;
+            addClass(statemnetspcCell, pcToColor(statementspc));
+    
+            // statements nm
+            const statementsnmCell = row.insertCell();
+            statementsnmCell.innerText = `${stats.statements!.hit}/${stats.statements!.found}`;
+            addClass(statementsnmCell, pcToColor(statementspc));
+        }
 
-        // brnaches pc
+        // branches pc
         const branchespcCell = row.insertCell();
         branchespcCell.innerText = `${isNaN(branchespc) ? 100 : branchespc}%`;
         addClass(branchespcCell, pcToColor(branchespc));
