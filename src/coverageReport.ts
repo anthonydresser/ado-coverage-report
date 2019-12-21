@@ -34,6 +34,9 @@ export class CoverageReport {
         this.fileTable = new FileTable(fileTableContainer, this.report);
         this.parent.appendChild(fileTableContainer); 
         this.container.appendChild(this.parent);
+        if (window.location.hash) {
+            this.context = `**/${window.location.hash.slice(1)}/**`;
+        }
         this.render();
         window.addEventListener('hashchange', () => {
             this.onContextChange(window.location.hash.slice(1));
