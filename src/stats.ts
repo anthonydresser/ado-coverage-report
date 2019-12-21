@@ -61,12 +61,12 @@ export class GlobalStats {
     async render(filter: string[] = []): Promise<void> {
         const stats = await this.report.stats(filter);
         if (stats) {
-            this.branchesPercent.innerText = `${Math.round((stats.branches.actual / stats.branches.max) * 10000)/100}%`
-            this.branchesNumber.innerText = `${stats.branches.actual}/${stats.branches.max}`;
-            this.functionsPercent.innerText = `${Math.round((stats.functions.actual / stats.functions.max) * 10000)/100}%`
-            this.functionsNumber.innerText = `${stats.functions.actual}/${stats.functions.max}`;
-            this.linesPercent.innerText = `${Math.round((stats.lines.actual / stats.lines.max) * 10000)/100}%`
-            this.linesNumber.innerText = `${stats.lines.actual}/${stats.lines.max}`;
+            this.branchesPercent.innerText = `${Math.round((stats.branches.hit / stats.branches.found) * 10000)/100}%`
+            this.branchesNumber.innerText = `${stats.branches.hit}/${stats.branches.found}`;
+            this.functionsPercent.innerText = `${Math.round((stats.functions.hit / stats.functions.found) * 10000)/100}%`
+            this.functionsNumber.innerText = `${stats.functions.hit}/${stats.functions.found}`;
+            this.linesPercent.innerText = `${Math.round((stats.lines.hit / stats.lines.found) * 10000)/100}%`
+            this.linesNumber.innerText = `${stats.lines.hit}/${stats.lines.found}`;
         }
     }
 }
@@ -149,9 +149,9 @@ export class FileTable {
     }
 
     private fillRow(row: HTMLTableRowElement, path: string, stats: Stats): void {
-        const branchespc = Math.round((stats.branches.actual / stats.branches.max) * 10000)/100;
-        const functionspc = Math.round((stats.functions.actual / stats.functions.max) * 10000)/100;
-        const linespc = Math.round((stats.lines.actual / stats.lines.max) * 10000)/100;
+        const branchespc = Math.round((stats.branches.hit / stats.branches.found) * 10000)/100;
+        const functionspc = Math.round((stats.functions.hit / stats.functions.found) * 10000)/100;
+        const linespc = Math.round((stats.lines.hit / stats.lines.found) * 10000)/100;
 
         // path cell
         const fileCell = row.insertCell();
@@ -174,7 +174,7 @@ export class FileTable {
 
         // branches nm
         const branchesnmCell = row.insertCell();
-        branchesnmCell.innerText = `${stats.branches.actual}/${stats.branches.max}`;
+        branchesnmCell.innerText = `${stats.branches.hit}/${stats.branches.found}`;
         addClass(branchesnmCell, pcToColor(branchespc));
 
         // function pc
@@ -184,7 +184,7 @@ export class FileTable {
 
         // functions nm
         const functionsnmCell = row.insertCell();
-        functionsnmCell.innerText = `${stats.functions.actual}/${stats.functions.max}`;
+        functionsnmCell.innerText = `${stats.functions.hit}/${stats.functions.found}`;
         addClass(functionsnmCell, pcToColor(functionspc));
 
         // lines pc
@@ -194,7 +194,7 @@ export class FileTable {
 
         // lines number
         const linesnmCell = row.insertCell();
-        linesnmCell.innerText = `${stats.lines.actual}/${stats.lines.max}`;
+        linesnmCell.innerText = `${stats.lines.hit}/${stats.lines.found}`;
         addClass(linesnmCell, pcToColor(linespc));
     }
 }

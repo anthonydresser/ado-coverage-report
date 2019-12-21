@@ -1,3 +1,5 @@
+import { coalesce } from "./base/common/arrays";
+
 export interface LCOVEntry {
     /**
      * Source File
@@ -60,4 +62,9 @@ export function createLCOVEntry(itemString: string): LCOVEntry | undefined {
         return undefined;
     }
     return entry;
+}
+
+export function createLCOVReport(data: string): LCOVEntry[] | undefined {
+    const records = data.split('end_of_record');
+    return coalesce(records.map(r => createLCOVEntry(r)));
 }

@@ -1,17 +1,29 @@
-import { createLCOVEntry, LCOVEntry } from './lcov';
+import { LCOVEntry, createLCOVReport } from './lcov';
 import minimatch from 'minimatch';
-import { coalesce } from './base/common/arrays';
 import * as comlink from 'comlink';
 
+interface CoverageEntry {
+    file: string;
+    branchesFound: number;
+    branchesHit: number;
+    linesFound: number;
+    linesHit: number;
+    functionsFound: number;
+    functionsHit: number;
+    statementsFound?: number;
+    statementsHit?: number;
+}
+
 export interface Stat {
-    max: number;
-    actual: number;
+    found: number;
+    hit: number;
 }
 
 export interface Stats {
     lines: Stat;
     branches: Stat;
     functions: Stat;
+    statements?: Stat;
 }
 
 export interface IReport {
@@ -28,29 +40,43 @@ interface IInternalReport {
     files(matches?: string[]): Array<string> | undefined;
 }
 
+function fromLCOV(entry: LCOVEntry): CoverageEntry {
+    return {
+        branchesFound: entry.BRF,
+        branchesHit: entry.BRH,
+        file: entry.SF,
+        functionsFound: entry.FNF,
+        functionsHit: entry.FNH,
+        linesFound: entry.LF,
+        linesHit: entry.LH
+    }
+}
+
 class Report implements IInternalReport {
-    private lcovEntries?: LCOVEntry[];
+    private entries?: CoverageEntry[];
 
     createReport(data: string): void {
-        const records = data.split('end_of_record');
-        this.lcovEntries = coalesce(records.map(r => createLCOVEntry(r)));
+        try {
+            this.entries = createLCOVReport(data)?.map(e => fromLCOV(e));
+        } catch (e) {
+            console.warn('Failed to create lcov report')
+        }
     }
 
-    // stats(matches: { name: string; match: string }): CategoryStat[] | undefined;
-    stats(matches: string[] = [] /*| { name: string; match: string }*/): /*CategoryStat[] | */Stats | undefined {
-        if (!this.lcovEntries) {
+    stats(matches: string[] = []): Stats | undefined {
+        if (!this.entries) {
             return;
         }
 
-        const stats: Stats = { lines: { actual: 0, max: 0 }, branches: { actual: 0, max: 0 }, functions: { actual: 0, max: 0} };
-        for (const entry of this.lcovEntries) {
-            if (matches.every(m => minimatch(entry.SF, m))) {
-                stats.lines.actual += entry.LH;
-                stats.lines.max += entry.LF;
-                stats.branches.actual += entry.BRH;
-                stats.branches.max += entry.BRF;
-                stats.functions.actual += entry.FNH;
-                stats.functions.max += entry.FNF;
+        const stats: Stats = { lines: { hit: 0, found: 0 }, branches: { hit: 0, found: 0 }, functions: { hit: 0, found: 0} };
+        for (const entry of this.entries) {
+            if (matches.every(m => minimatch(entry.file, m))) {
+                stats.lines.hit += entry.linesHit;
+                stats.lines.found += entry.linesFound;
+                stats.branches.hit += entry.branchesHit;
+                stats.branches.found += entry.branchesFound;
+                stats.functions.hit += entry.functionsHit;
+                stats.functions.found += entry.functionsFound;
             }
         }
 
@@ -58,11 +84,11 @@ class Report implements IInternalReport {
     }
 
     files(matches: string[] = []): Array<string> | undefined {
-        if (!this.lcovEntries) {
+        if (!this.entries) {
             return;
         }
 
-        const files = this.lcovEntries.map(l => l.SF);
+        const files = this.entries.map(l => l.file);
 
         if (matches) {
             return files.filter(f => matches.every(m => minimatch(f, m)));
