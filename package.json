@@ -26,5 +26,9 @@
     "tfx-cli": "^0.7.11",
     "tslib": "^1.10.0",
     "typescript": "^3.7.3"
+  },
+  "resolutions": {
+    "semver": "4.3.2",
+    "bl": "0.9.5"
   }
 }
