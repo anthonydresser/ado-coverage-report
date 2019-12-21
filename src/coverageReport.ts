@@ -1,5 +1,5 @@
 import { IReport } from "./reportBuilder";
-import { addClass } from "./base/browser/dom";
+import { addClass, addClasses } from "./base/browser/dom";
 import { GlobalStats, FileTable } from "./stats";
 import * as comlink from 'comlink';
 
@@ -11,6 +11,7 @@ export class CoverageReport {
     private minimatchInput?: HTMLInputElement;
     private globalStats?: GlobalStats;
     private fileTable?: FileTable;
+    private contextLabel?: HTMLElement;
 
     private context?: string;
     private filter?: string;
@@ -22,25 +23,33 @@ export class CoverageReport {
         this.report = (await new (Reporter as any)()) as IReport;
         await this.report.createReport(this.lcovString);
         this.parent = document.createElement('div');
-        addClass(this.parent, 'coverage-report');
+        addClasses(this.parent, 'coverage-report', 'full-size');
+        this.parent.style.display = 'flex';
+        this.parent.style.flexDirection = 'column';
         this.minimatchInput = document.createElement('input');
         this.minimatchInput.addEventListener('change', e => this.onInputChange(e));
         addClass(this.minimatchInput, 'minimatch-input');
         this.parent.appendChild(this.minimatchInput);
+        this.contextLabel = document.createElement('h2');
+        this.contextLabel.innerText = 'All Files';
+        this.parent.appendChild(this.contextLabel);
         const globalStatsContainer = document.createElement('div');
         this.globalStats = new GlobalStats(globalStatsContainer, this.report);
         this.parent.appendChild(globalStatsContainer);
         const fileTableContainer = document.createElement('div');
+        fileTableContainer.style.flex = '1 1 auto';
+        fileTableContainer.style.overflow = 'hidden';
         this.fileTable = new FileTable(fileTableContainer, this.report);
         this.parent.appendChild(fileTableContainer); 
         this.container.appendChild(this.parent);
-        if (window.location.hash) {
-            this.context = `**/${window.location.hash.slice(1)}/**`;
-        }
-        this.render();
         window.addEventListener('hashchange', () => {
             this.onContextChange(window.location.hash.slice(1));
-        }, false)
+        }, false);
+        if (window.location.hash) {
+            this.onContextChange(window.location.hash.slice(1));
+        } else {
+            this.render();
+        }
     }
 
     private onInputChange(e: Event): void {
@@ -49,6 +58,7 @@ export class CoverageReport {
     }
 
     private onContextChange(path: string): void {
+        this.contextLabel!.innerText = path;
         this.context = `**/${path}/**`;
         this.render();
     }

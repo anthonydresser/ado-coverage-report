@@ -1,5 +1,5 @@
 import { IReport, Stats } from "./reportBuilder";
-import { addClass, clearNode } from "./base/browser/dom";
+import { addClass, clearNode, addClasses } from "./base/browser/dom";
 
 export class GlobalStats {
     private readonly container: HTMLElement;
@@ -76,17 +76,25 @@ export class FileTable {
     private tableHeader: HTMLTableSectionElement;
 
     constructor(parent: HTMLElement, private readonly report: IReport) {
+        parent.style.display = 'flex';
         const container = document.createElement('div');
-        container.innerText = 'File Table';
-        addClass(container, 'file-table-container');
+        addClasses(container, 'file-table-container');
+        container.style.overflow = 'hidden';
+        container.style.display = 'flex';
+        container.style.flex = '1 1 auto'
         parent.appendChild(container);
-        const tableContainer = document.createElement('div');
-        container.append(tableContainer);
         const table = document.createElement('table');
-        addClass(table, 'file-table');
-        tableContainer.appendChild(table);
+        addClasses(table, 'file-table');
+        table.style.display = 'flex';
+        table.style.flexDirection = 'column';
+        table.style.overflow = 'hidden';
+        table.style.flex = '1 1 auto'
+        container.appendChild(table);
         this.tableBody = document.createElement('tbody');
         this.tableHeader = document.createElement('thead');
+        this.tableHeader.style.flex = '0 0 auto';
+        this.tableBody.style.flex = '1 1 auto';
+        this.tableBody.style.overflowY = 'auto';
         table.appendChild(this.tableHeader);
         table.appendChild(this.tableBody);
     }

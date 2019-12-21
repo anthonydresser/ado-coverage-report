@@ -1,6 +1,6 @@
 {
   "name": "coverage-extension",
-  "version": "1.0.37",
+  "version": "1.0.41",
   "description": "Provides coverage based on cobvera reports",
   "author": "anthonydresser",
   "license": "ISC",
